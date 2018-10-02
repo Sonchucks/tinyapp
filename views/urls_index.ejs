@@ -3,11 +3,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <title>TinyApp</title>
-</head>
-
-
 <body>
     <!-- Add your EJS code here -->
 
@@ -17,17 +12,15 @@
 
   <main>
     <h1>URL's</h2>
-    <p>
       <% for (var shortURLS in urls) { %>
-        <li>
+          <%= shortURLS %> > <a href='<%= urls[shortURLS] %>'><%= urls[shortURLS] %></a>
           <form method="POST" action="/urls/<%= shortURLS %>/delete">
-            <a href='#'><%= shortURLS %></a> > <%= urls[shortURLS] %>
-            <input type="submit" value="Delete">
+            <input type="submit" value="Delete" display="inline-block">
           </form>
-        </li>
+          <form method="GET" action="/urls/<%= shortURLS %>">
+            <input type="submit" value="Edit">
+          </form>
       <% }; %>
-    </p>
-
   </main>
 </body>
 

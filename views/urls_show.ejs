@@ -14,9 +14,17 @@
   </header>
     <!-- Add your EJS code here -->
   <main>
-    <h1>URL's</h2>
-    <p>
-        <li><a href='id'><%= shortURL %></a> > <%= longURL %></li>
+    <h1>
+      <li>ShortURL: <%= shortURL %> = <a href='<%= longURL %>'><%= longURL %></a></li>
+      <form method="POST" action="/urls/<%= shortURL %>">
+        <input id="longURL", type="text" name="longURL" placeholder="http://" style="width: 300px">
+        <input type="submit" value="Update">
+      </form>
+
+    </h2>
+ <p>
+
+
     </p>
   </main>
 </body>

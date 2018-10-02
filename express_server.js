@@ -31,11 +31,13 @@ app.get('/urls', (req, res) => {
   res.render('urls_index', templateVars);
 });
 
+// added a delete button to each shortened URL, which when clicked deletes the associated key-value pair
 app.post('/urls/:id/delete', (req, res) => {
   const shortURL = req.params.id;
   delete urlDatabase[shortURL];
   res.redirect('/urls');
 });
+
 
 // using shortURL, redirects to longURL
 app.get('/u/:shortURL', (req, res) => {
@@ -65,6 +67,16 @@ app.get('/urls/:id', (req, res) => {
     longURL: urlDatabase[req.params.id]
     };
   res.render('urls_show', templateVars);
+});
+
+
+// Takes a shortURL and reassigns a longURL to it
+app.post('/urls/:id', (req, res) => {
+  const shortURL = req.params.id;
+  const newInput = req.body.longURL;
+
+  urlDatabase[shortURL] = newInput;
+  res.redirect(`/urls`);
 });
 
 
