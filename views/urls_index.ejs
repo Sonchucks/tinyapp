@@ -19,9 +19,15 @@
     <h1>URL's</h2>
     <p>
       <% for (var shortURLS in urls) { %>
-        <li><a href='/'><%= shortURLS %></a> > <%= urls[shortURLS] %></li>
+        <li>
+          <form method="POST" action="/urls/<%= shortURLS %>/delete">
+            <a href='#'><%= shortURLS %></a> > <%= urls[shortURLS] %>
+            <input type="submit" value="Delete">
+          </form>
+        </li>
       <% }; %>
     </p>
+
   </main>
 </body>
 
