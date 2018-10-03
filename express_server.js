@@ -25,27 +25,20 @@ function generateRandomString() {
   return shortID;
 }
 
-// renders /urls page
+// When /urls is inputted into the address bar, it renders the urls_index page
 app.get('/urls', (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
-// added a delete button to each shortened URL, which when clicked deletes the associated key-value pair
+// added a delete button to each URL, which when clicked deletes the associated key-value pair
 app.post('/urls/:id/delete', (req, res) => {
   const shortURL = req.params.id;
   delete urlDatabase[shortURL];
   res.redirect('/urls');
 });
 
-
-// using shortURL, redirects to longURL
-app.get('/u/:shortURL', (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
-});
-
-// renders /urls/new page
+// When /urls/new is inputted into the address bar, it renders urls_new page
 app.get('/urls/new', (req, res) => {
   res.render('urls_new');
 });
@@ -80,6 +73,15 @@ app.post('/urls/:id', (req, res) => {
 });
 
 
+
+// using shortURL, redirects to longURL
+app.get('/u/:shortURL', (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
+
+
 app.get('/', (req, res) => {
   res.send('Hello!');
 });
@@ -95,3 +97,4 @@ app.get('/urls.json', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
