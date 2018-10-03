@@ -138,7 +138,6 @@ app.post('/login', (req, res) => {
 
   if (validateEmail(eMail) && validatePassword(password)) {
     const id = obtainID(eMail);
-    console.log(id)
     res.cookie('id', userDatabase[id].id);
     res.redirect('/');
   } else if (validateEmail(eMail) && !validatePassword(password)) {
