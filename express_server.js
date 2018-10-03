@@ -15,8 +15,25 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com'
 };
 
-// function which generates a random short ID
+const userDatabase = {
+  'userRandomID': {
+    id: 'userRandomID',
+    email: 'user@example.com',
+    password: 'purple-monkey-dinosaur'
+  },
+ 'user2RandomID': {
+    id: 'user2RandomID',
+    email: 'user2@example.com',
+    password: 'dishwasher-funk'
+  },
+  'Sonchucks': {
+    id: 'Sonchucks',
+    email: 'son.hyun.uk@hotmail.com',
+    password: 'password'
+  }
+};
 
+// function generating a random short ID
 function generateRandomString() {
   let shortID = '';
   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -27,11 +44,36 @@ function generateRandomString() {
   return shortID;
 }
 
+function validateEmail(email) {
+  for (var randomUserID in userDatabase) {
+    if (userDatabase[randomUserID].email === email) {
+      return true;
+    }
+  }
+}
+
+function validatePassword(password) {
+  for (var randomUserID in userDatabase) {
+    if (userDatabase[randomUserID].password === password) {
+      return true;
+    }
+  }
+}
+
+function obtainID(email) {
+  for (var randomUserID in userDatabase) {
+    if (userDatabase[randomUserID].email === email) {
+      return randomUserID;
+    }
+  }
+}
+
+
 // When /urls is inputted into the address bar, it renders the urls_index page
 app.get('/urls', (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies.userName
+    users: userDatabase[req.cookies.id]
   };
   res.render('urls_index', templateVars);
 });
@@ -41,6 +83,12 @@ app.post('/urls/:id/delete', (req, res) => {
   const shortURL = req.params.id;
   delete urlDatabase[shortURL];
   res.redirect('/urls');
+});
+
+// Deletes the cookie when user logouts from /urls
+app.post('/logout', (req, res) => {
+  res.clearCookie('id');
+  res.redirect('/login');
 });
 
 // When /urls/new is inputted into the address bar, it renders urls_new page
@@ -78,19 +126,49 @@ app.post('/urls/:id', (req, res) => {
 });
 
 
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
 // Allows user to input into field a username and login
 // then stores that information as a cookie
 app.post('/login', (req, res) => {
-  res.cookie('userName', req.body.userName);
-  res.redirect('/urls');
+  const eMail = req.body.email;
+  const password = req.body.password;
+
+  if (validateEmail(eMail) && validatePassword(password)) {
+    const id = obtainID(eMail);
+    console.log(id)
+    res.cookie('id', userDatabase[id].id);
+    res.redirect('/');
+  } else if (validateEmail(eMail) && !validatePassword(password)) {
+    res.status(403).send(`The password you've submitted is incorrect!
+      Please try again!`);
+  } else if (!validateEmail(eMail)) {
+    res.status(403).send(`You don't have an account, please create one!`);
+  }
 });
 
-// Deletes the cookie when user logouts
-app.post('/logout', (req, res) => {
-  res.clearCookie('userName');
-  res.redirect('/urls');
+
+app.get('/register', (req, res) => {
+  res.render('registration');
 });
 
+app.post('/register', (req, res) => {
+  const randomUserID = generateRandomString();
+  const eMail = req.body.email;
+  const password = req.body.password;
+
+  if (!eMail || !password) {
+    res.status(400).send('Please enter a valid email and/or password!');
+  } else if (validateEmail(eMail) === true) {
+    res.status(400).send('Email already exists');
+  } else {
+    userDatabase[randomUserID] = {id: randomUserID, email: eMail, password: password};
+    res.cookie('id', userDatabase[randomUserID].id);
+    res.redirect('/urls');
+  }
+});
 
 
 // using shortURL, redirects to longURL
