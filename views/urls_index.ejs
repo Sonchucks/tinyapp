@@ -1,25 +1,23 @@
-<!-- views/urls_index.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
 
 <body>
-    <!-- Add your EJS code here -->
-
   <header>
-    <% include ./partials/_header%>
+    <% include ./partials/_header %>
   </header>
 
   <main>
     <h1>URL's</h2>
       <% for (var shortURLS in urls) { %>
-          <%= shortURLS %> > <a href='<%= urls[shortURLS] %>'><%= urls[shortURLS] %></a>
-          <form method="POST" action="/urls/<%= shortURLS %>/delete">
-            <input type="submit" value="Delete" display="inline-block">
-          </form>
-          <form method="GET" action="/urls/<%= shortURLS %>">
-            <input type="submit" value="Edit">
-          </form>
+        <%= shortURLS %> > <a href='<%= urls[shortURLS] %>'><%= urls[shortURLS] %></a>
+
+        <form method="GET" action="/urls/<%= shortURLS %>">
+          <input type="submit" value="Edit">
+        </form>
+
+        <form method="POST" action="/urls/<%= shortURLS %>/delete">
+          <input type="submit" value="Delete" display="inline-block">
+        </form>
       <% }; %>
   </main>
 </body>

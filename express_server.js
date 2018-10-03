@@ -2,11 +2,13 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 let app = express();
 const PORT = 8080; // default port 8080
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 const urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
@@ -27,7 +29,10 @@ function generateRandomString() {
 
 // When /urls is inputted into the address bar, it renders the urls_index page
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies.userName
+  };
   res.render('urls_index', templateVars);
 });
 
@@ -53,7 +58,7 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${newShortID}`);
 });
 
-// renders /urls/:id page
+// when /urls/:id is inputted into the address bar, it renders urls_show page
 app.get('/urls/:id', (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
@@ -70,6 +75,20 @@ app.post('/urls/:id', (req, res) => {
 
   urlDatabase[shortURL] = newInput;
   res.redirect(`/urls`);
+});
+
+
+// Allows user to input into field a username and login
+// then stores that information as a cookie
+app.post('/login', (req, res) => {
+  res.cookie('userName', req.body.userName);
+  res.redirect('/urls');
+});
+
+// Deletes the cookie when user logouts
+app.post('/logout', (req, res) => {
+  res.clearCookie('userName');
+  res.redirect('/urls');
 });
 
 
