@@ -8,6 +8,16 @@
 
   <main>
     <h1>URL's</h2>
+    <% if (users) { %>
+      <form method="GET" action='/urls/new'>
+        <input type="submit" value="New URL">
+      </form>
+    <% } else { %>
+      <form method="GET" action='/login'>
+        <input type="submit" value="New URL">
+      </form>
+    <% }; %>
+
       <% for (var shortURLS in urls) { %>
         <%= shortURLS %> > <a href='<%= urls[shortURLS] %>'><%= urls[shortURLS] %></a>
 

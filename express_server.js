@@ -15,6 +15,7 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com'
 };
 
+
 const userDatabase = {
   'userRandomID': {
     id: 'userRandomID',
@@ -97,13 +98,13 @@ app.get('/urls/new', (req, res) => {
 });
 
 // posts to /urls/<shortid> after adding key-value pair
-app.post('/urls', (req, res) => {
+app.post('/urls/new', (req, res) => {
   const newInput = req.body.longURL;
   const newShortID = generateRandomString();
-
+  console.log(req.cookies.id);
   urlDatabase[newShortID] = newInput;
 
-  res.redirect(`/urls/${newShortID}`);
+  res.redirect(`/urls`);
 });
 
 // when /urls/:id is inputted into the address bar, it renders urls_show page
