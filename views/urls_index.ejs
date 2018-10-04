@@ -1,40 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<head>
+  <title>TinyAPP</title>
+  <% include ./partials/_header %>
+</head>
+
 <body>
-  <header>
-    <% include ./partials/_header %>
-  </header>
-
   <main>
-    <h1>URL's</h2>
     <% if (users) { %>
-      <form method="GET" action='/urls/new'>
-        <input type="submit" value="New URL">
-      </form>
-
-      <% for (var shortURLS in urls) { %>
-        <% if (users === urls[shortURLS].userID) { %>
-          <%= urls[shortURLS].longURL %> > <a href='<%= urls[shortURLS].longURL %>'><%= shortURLS %></a>
-          <form method="GET" action="/urls/<%= shortURLS %>">
-            <input type="submit" value="Edit">
-          </form>
-          <form method="POST" action="/urls/<%= shortURLS %>/delete">
-            <input type="submit" value="Delete" display="inline-block">
-          </form>
+      <table>
+        <tr>
+          <th>Original URL</th>
+          <th>ShortURL</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+        <% for (var shortURLS in urls) { %>
+          <% if (users.id === urls[shortURLS].userID) { %>
+            <tr>
+              <th><%= urls[shortURLS].longURL %></th>
+              <th><a href='<%= urls[shortURLS].longURL %>'><%= shortURLS %></a></th>
+              <th>
+                <form method="GET" action="/urls/<%= shortURLS %>">
+                  <input type="submit" value="Edit">
+                </form>
+              </th>
+              <th>
+                <form method="POST" action="/urls/<%= shortURLS %>/delete">
+                  <input type="submit" value="Delete" display="inline-block">
+                </form>
+              </th>
+          <% } %>
         <% } %>
-      <% } %>
-    <% } else { %>
-      <form method="GET" action='/login'>
-        <input type="submit" value="New URL">
+      </table>
+      <form method="GET" action='/urls/new'>
+        <input type="submit" value="Create a New ShortURL">
       </form>
-
-      <p>
-      Please log in!
-      </p>
-
+    <% } else { %>
+      <p>Please log in!</p>
     <% }; %>
-
 
   </main>
 </body>

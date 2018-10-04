@@ -2,19 +2,49 @@
 
 <h3>
     <% if (users) { %>
-      <form method="POST" action="/logout">
-        <%= users %>
-        <input type="submit" value="Logout">
-      </form>
+      <table style="width:0%;">
+        <tr>
+          <th><%= users.email %></th>
+          <th>
+            <form method="POST" action="/logout">
+              <input type="submit" value="Logout">
+            </form>
+          </th>
+        </tr>
+      </table>
     <% } else { %>
-      <form method="GET" action="/login">
-        <input type="submit" value="Sign In">
-      </form>
-      <form method="GET" action="/register">
-        <input type="submit" value="Register">
-      </form>
+      <table style="width:0%">
+        <tr>
+          <th>
+            <form method="GET" action="/login">
+              <input type="submit" value="Sign In">
+            </form>
+          </th>
+          <th>
+            <form method="GET" action="/register">
+              <input type="submit" value="Register">
+            </form>
+          </th>
+        </tr>
+      </table>
     <% }; %>
 </h3>
 
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
 
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
 

@@ -2,14 +2,20 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 let app = express();
 const PORT = 8080; // default port 8080
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+// app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['id']
+}));
+
 
 const urlDatabase = {
   'b2xVn2': {
@@ -72,9 +78,9 @@ function obtainID(email) {
 
 // When /urls is inputted into the address bar, it renders the urls_index page
 app.get('/urls', (req, res) => {
-  let templateVars = {
+  const templateVars = {
     urls: urlDatabase,
-    users: req.cookies.id
+    users: userDatabase[req.session.id]
   };
   res.render('urls_index', templateVars);
 });
@@ -82,7 +88,7 @@ app.get('/urls', (req, res) => {
 // added a delete button to each URL, which when clicked deletes the associated key-value pair
 app.post('/urls/:id/delete', (req, res) => {
   const shortURL = req.params.id;
-  const userID = req.cookies.id;
+  const userID = req.session.id;
 
   if (urlDatabase[shortURL].userID === userID) {
     delete urlDatabase[shortURL];
@@ -94,20 +100,29 @@ app.post('/urls/:id/delete', (req, res) => {
 
 // Deletes the cookie when user logouts from /urls
 app.post('/logout', (req, res) => {
-  res.clearCookie('id');
+  req.session = null;
   res.redirect('/login');
 });
 
 // When /urls/new is inputted into the address bar, it renders urls_new page
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  const templateVars = {
+    urls: urlDatabase,
+    users: userDatabase[req.session.id]
+  };
+
+  if (req.session.id) {
+    res.render('urls_new', templateVars);
+  } else {
+    res.redirect('/login');
+  }
 });
 
 // posts to /urls/<shortid> after adding key-value pair
-app.post('/urls/new', (req, res) => {
+app.post('/urls', (req, res) => {
   const newInput = req.body.longURL;
   const newShortID = generateRandomString();
-  const userID = req.cookies.id;
+  const userID = req.session.id;
   urlDatabase[newShortID] = { longURL: newInput, userID: userID };
 
   res.redirect(`/urls/${newShortID}`);
@@ -118,13 +133,25 @@ app.get('/urls/:id', (req, res) => {
   const templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
-    userID : req.cookies.id
+    userID : req.session.id,
+    urls: urlDatabase,
+    users: userDatabase[req.session.id]
     };
 
-  if (urlDatabase[templateVars.shortURL].userID === templateVars.userID) {
-    res.render('urls_show', templateVars);
-  } else {
-    res.send('You are not able to edit this URL');
+  for (let keys in urlDatabase) {
+    if (urlDatabase[keys] !== templateVars.shortURL) {
+      res.send('This shortURL does not exist');
+    } else {
+      if (templateVars.userID) {
+        if (urlDatabase[templateVars.shortURL].userID === templateVars.userID) {
+          res.render('urls_show', templateVars);
+        } else {
+          res.send('You are not able to edit this URL');
+        }
+      } else {
+        res.redirect('/login');
+      }
+    }
   }
 });
 
@@ -133,7 +160,7 @@ app.get('/urls/:id', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newInput = req.body.longURL;
-  const userID = req.cookies.id;
+  const userID = req.session.id;
 
   urlDatabase[shortURL] = { longURL: newInput, userID: userID };
   res.redirect(`/urls`);
@@ -153,7 +180,7 @@ app.post('/login', (req, res) => {
 
   if (validateEmail(eMail) && bcrypt.compareSync(password, userDatabase[obtainID(eMail)].password)) {
     const id = obtainID(eMail);
-    res.cookie('id', userDatabase[id].id);
+    req.session.id = userDatabase[id].id;
     res.redirect('/urls');
   } else if (validateEmail(eMail) && !bcrypt.compareSync(password, userDatabase[obtainID(eMail)].password)) {
     res.status(403).send(`The password you've submitted is incorrect!
@@ -182,7 +209,7 @@ app.post('/register', (req, res) => {
     res.status(400).send('Email already exists');
   } else {
     userDatabase[randomUserID] = {id: randomUserID, email: eMail, password: hashedPassword};
-    res.cookie('id', userDatabase[randomUserID].id);
+    req.session.id = userDatabase[randomUserID].id;
     res.redirect('/urls');
   }
 });
@@ -195,9 +222,12 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 
-// extra code that was in original template
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  if (req.session.id) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.get('/hello', (req, res) => {

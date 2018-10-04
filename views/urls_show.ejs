@@ -2,25 +2,40 @@
 <html lang="en">
 
 <head>
-  <title>TinyApp</title>
+  <title>TinyAPP</title>
+  <% include ./partials/_header %>
 </head>
 
 <body>
 
   <main>
-    <h1>
-      <li>ShortURL: <a href='/u/<%= shortURL %>'>/u/<%= shortURL %></a> = <a href='<%= longURL %>'><%= longURL.longURL %></a></li>
-      <form method="POST" action="/urls/<%= shortURL %>">
-        <input id="longURL", type="text" name="longURL" placeholder="http://" style="width: 300px">
-        <input type="submit" value="Update">
+    <h1>Reassign your ShortURL</h1>
+      <table>
+        <tr>
+          <th>New URL</th>
+          <th>ShortURL</th>
+          <th>Original URL</th>
+        </tr>
+        <form method="POST" action="/urls/<%= shortURL %>">
+          <tr>
+            <th>
+              <span>
+              <input id="longURL", type="text" name="longURL" placeholder="http://" style="width: 80%">
+              <input type="submit" value="Update">
+              </span>
+            </th>
+            <th><a href='/u/<%= shortURL %>'>/u/<%= shortURL %></a></th>
+            <th><a href='<%= longURL %>'><%= longURL.longURL %></a></th>
+          </tr>
+        </form>
+      </table>
+      <form method="GET" action='/urls'>
+        <input type="submit" value="Main">
       </form>
-
-    </h2>
- <p>
-
-
-    </p>
   </main>
+
+
+
 </body>
 
 </html>
