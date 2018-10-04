@@ -3,6 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 let app = express();
 const PORT = 8080; // default port 8080
 
@@ -26,17 +27,17 @@ const userDatabase = {
   'userRandomID': {
     id: 'userRandomID',
     email: 'user@example.com',
-    password: 'purple-monkey-dinosaur'
+    password: bcrypt.hashSync('purple-monkey-dinosaur', 10)
   },
  'user2RandomID': {
     id: 'user2RandomID',
     email: 'user2@example.com',
-    password: 'dishwasher-funk'
+    password: bcrypt.hashSync('dishwasher-funk', 10)
   },
   'Sonchucks': {
     id: 'Sonchucks',
     email: 'son.hyun.uk@hotmail.com',
-    password: 'password'
+    password: bcrypt.hashSync('password', 10)
   }
 };
 
@@ -60,15 +61,6 @@ function validateEmail(email) {
   }
 }
 
-// function to validate inputted password against userDatabase
-function validatePassword(password) {
-  for (var randomUserID in userDatabase) {
-    if (userDatabase[randomUserID].password === password) {
-      return true;
-    }
-  }
-}
-
 // function to obtain ID from the email
 function obtainID(email) {
   for (var randomUserID in userDatabase) {
@@ -77,7 +69,6 @@ function obtainID(email) {
     }
   }
 }
-
 
 // When /urls is inputted into the address bar, it renders the urls_index page
 app.get('/urls', (req, res) => {
@@ -149,6 +140,7 @@ app.post('/urls/:id', (req, res) => {
 });
 
 
+//renders the login page
 app.get('/login', (req, res) => {
   res.render('login');
 });
@@ -159,11 +151,11 @@ app.post('/login', (req, res) => {
   const eMail = req.body.email;
   const password = req.body.password;
 
-  if (validateEmail(eMail) && validatePassword(password)) {
+  if (validateEmail(eMail) && bcrypt.compareSync(password, userDatabase[obtainID(eMail)].password)) {
     const id = obtainID(eMail);
     res.cookie('id', userDatabase[id].id);
     res.redirect('/urls');
-  } else if (validateEmail(eMail) && !validatePassword(password)) {
+  } else if (validateEmail(eMail) && !bcrypt.compareSync(password, userDatabase[obtainID(eMail)].password)) {
     res.status(403).send(`The password you've submitted is incorrect!
       Please try again!`);
   } else if (!validateEmail(eMail)) {
@@ -171,22 +163,25 @@ app.post('/login', (req, res) => {
   }
 });
 
-
+// renders the registration page
 app.get('/register', (req, res) => {
   res.render('registration');
 });
 
+
+// allows user to create a new account whose password is hashed then pushed to the userDatabase
 app.post('/register', (req, res) => {
   const randomUserID = generateRandomString();
   const eMail = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (!eMail || !password) {
     res.status(400).send('Please enter a valid email and/or password!');
   } else if (validateEmail(eMail) === true) {
     res.status(400).send('Email already exists');
   } else {
-    userDatabase[randomUserID] = {id: randomUserID, email: eMail, password: password};
+    userDatabase[randomUserID] = {id: randomUserID, email: eMail, password: hashedPassword};
     res.cookie('id', userDatabase[randomUserID].id);
     res.redirect('/urls');
   }
@@ -200,7 +195,7 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 
-
+// extra code that was in original template
 app.get('/', (req, res) => {
   res.send('Hello!');
 });
