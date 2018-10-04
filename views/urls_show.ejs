@@ -9,7 +9,7 @@
 
   <main>
     <h1>
-      <li>ShortURL: <%= shortURL %> = <a href='<%= longURL %>'><%= longURL %></a></li>
+      <li>ShortURL: <%= shortURL %> = <a href='<%= longURL %>'><%= longURL.longURL %></a></li>
       <form method="POST" action="/urls/<%= shortURL %>">
         <input id="longURL", type="text" name="longURL" placeholder="http://" style="width: 300px">
         <input type="submit" value="Update">

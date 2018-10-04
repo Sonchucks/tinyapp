@@ -11,8 +11,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com'
+  'b2xVn2': {
+    longURL: 'http://www.lighthouselabs.ca',
+    userID: 'userRandomID'
+  },
+  '9sm5xK': {
+    longURL: 'http://www.google.com',
+    userID: 'Sonchucks'
+  }
 };
 
 
@@ -45,6 +51,7 @@ function generateRandomString() {
   return shortID;
 }
 
+// function to validate inputted email against userDatabase
 function validateEmail(email) {
   for (var randomUserID in userDatabase) {
     if (userDatabase[randomUserID].email === email) {
@@ -53,6 +60,7 @@ function validateEmail(email) {
   }
 }
 
+// function to validate inputted password against userDatabase
 function validatePassword(password) {
   for (var randomUserID in userDatabase) {
     if (userDatabase[randomUserID].password === password) {
@@ -61,6 +69,7 @@ function validatePassword(password) {
   }
 }
 
+// function to obtain ID from the email
 function obtainID(email) {
   for (var randomUserID in userDatabase) {
     if (userDatabase[randomUserID].email === email) {
@@ -74,7 +83,7 @@ function obtainID(email) {
 app.get('/urls', (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    users: userDatabase[req.cookies.id]
+    users: req.cookies.id
   };
   res.render('urls_index', templateVars);
 });
@@ -82,8 +91,14 @@ app.get('/urls', (req, res) => {
 // added a delete button to each URL, which when clicked deletes the associated key-value pair
 app.post('/urls/:id/delete', (req, res) => {
   const shortURL = req.params.id;
-  delete urlDatabase[shortURL];
-  res.redirect('/urls');
+  const userID = req.cookies.id;
+
+  if (urlDatabase[shortURL].userID === userID) {
+    delete urlDatabase[shortURL];
+    res.redirect('/urls');
+  } else {
+    res.send('You are not able to delete this URL');
+  }
 });
 
 // Deletes the cookie when user logouts from /urls
@@ -101,19 +116,25 @@ app.get('/urls/new', (req, res) => {
 app.post('/urls/new', (req, res) => {
   const newInput = req.body.longURL;
   const newShortID = generateRandomString();
-  console.log(req.cookies.id);
-  urlDatabase[newShortID] = newInput;
+  const userID = req.cookies.id;
+  urlDatabase[newShortID] = { longURL: newInput, userID: userID };
 
   res.redirect(`/urls`);
 });
 
 // when /urls/:id is inputted into the address bar, it renders urls_show page
 app.get('/urls/:id', (req, res) => {
-  let templateVars = {
+  const templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id]
+    longURL: urlDatabase[req.params.id],
+    userID : req.cookies.id
     };
-  res.render('urls_show', templateVars);
+
+  if (urlDatabase[templateVars.shortURL].userID === templateVars.userID) {
+    res.render('urls_show', templateVars);
+  } else {
+    res.send('You are not able to edit this URL');
+  }
 });
 
 
@@ -140,7 +161,7 @@ app.post('/login', (req, res) => {
   if (validateEmail(eMail) && validatePassword(password)) {
     const id = obtainID(eMail);
     res.cookie('id', userDatabase[id].id);
-    res.redirect('/');
+    res.redirect('/urls');
   } else if (validateEmail(eMail) && !validatePassword(password)) {
     res.status(403).send(`The password you've submitted is incorrect!
       Please try again!`);

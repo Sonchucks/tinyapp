@@ -12,23 +12,30 @@
       <form method="GET" action='/urls/new'>
         <input type="submit" value="New URL">
       </form>
+
+      <% for (var shortURLS in urls) { %>
+        <% if (users === urls[shortURLS].userID) { %>
+          <%= urls[shortURLS].longURL %> > <a href='<%= urls[shortURLS].longURL %>'><%= shortURLS %></a>
+          <form method="GET" action="/urls/<%= shortURLS %>">
+            <input type="submit" value="Edit">
+          </form>
+          <form method="POST" action="/urls/<%= shortURLS %>/delete">
+            <input type="submit" value="Delete" display="inline-block">
+          </form>
+        <% } %>
+      <% } %>
     <% } else { %>
       <form method="GET" action='/login'>
         <input type="submit" value="New URL">
       </form>
-    <% }; %>
 
       <% for (var shortURLS in urls) { %>
-        <%= shortURLS %> > <a href='<%= urls[shortURLS] %>'><%= urls[shortURLS] %></a>
-
-        <form method="GET" action="/urls/<%= shortURLS %>">
-          <input type="submit" value="Edit">
-        </form>
-
-        <form method="POST" action="/urls/<%= shortURLS %>/delete">
-          <input type="submit" value="Delete" display="inline-block">
-        </form>
+          <%= urls[shortURLS].longURL %> > <a href='<%= urls[shortURLS].longURL %>'><%= shortURLS %></a><br>
       <% }; %>
+
+    <% }; %>
+
+
   </main>
 </body>
 

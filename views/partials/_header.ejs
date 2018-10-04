@@ -3,7 +3,7 @@
 <h3>
     <% if (users) { %>
       <form method="POST" action="/logout">
-        <%= users.id %>
+        <%= users %>
         <input type="submit" value="Logout">
       </form>
     <% } else { %>
