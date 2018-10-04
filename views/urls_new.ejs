@@ -6,16 +6,30 @@
   <% include ./partials/_header %>
 </head>
 
-<body style="font-size:20px; padding:50px;">
-
+<body>
   <main>
 
-    <form action="/urls" method="POST" style="margin:150px;">
-      <p><h2>Create a New ShortURL</h2></p>
-      <label for="longURL">Enter a URL:</label>
-      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-      <input type="submit" value="Submit">
+    <form action="/urls" method="POST">
+      <table style="width:0%; margin-left:auto; margin-right:auto; text-align:left;">
+        <caption><h2>Create a New ShortURL</h2></caption>
+        <tr>
+          <th>
+            <label for="longURL">Enter a URL:</label>
+          </th>
+          <th>
+            <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+          </th>
+          <th>
+            <input type="submit" value="Submit">
+          </th>
+        </tr>
+      <table>
     </form>
+    <center>
+    <form method="GET" action='/urls'>
+      <input type="submit" value="Main">
+    </form>
+    </center
 
   </main>
 </body>

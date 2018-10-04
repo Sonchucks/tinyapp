@@ -1,23 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
+<head>
+  <title>TinyAPP Registration</title>
+  <h1>Tiny App</h1>
+</head>
 
-  </head>
+<body>
+  <main>
 
+    <form action="/register" method="POST" style="margin:150px;">
+      <table style="width:0%; margin-left:auto; margin-right:auto; text-align: left">
+        <caption><h2>Register a New Account</h2></caption>
+        <tr>
+          <th>
+            <label for="email">Enter Your Email:</label>
+          </th>
+          <th>
+            <input id="email" type="email" name="email" placeholder="youremail@email.com" style="width: 300px">
+          </th>
+        </tr>
+        <tr>
+          <th>
+            <label for="password">Enter Your Password:</label>
+          </th>
+          <th>
+            <input id="password" type="password" name="password" placeholder="Password" style="width: 300px">
+          </th>
+        <tr>
+        <tr>
+          <th><input type="submit" value="Register"></th>
+        </tr>
+      </table>
+    </form>
 
-  <body style="font-size:20px; padding:50px;">
+  </main>
+</body>
 
-    <main>
-
-      <form action="/register" method="POST" style="margin:150px;">
-        <label for="email">Enter an Email:</label>
-        <input id="email" type="email" name="email" placeholder="youremail@email.com" style="width: 300px">
-        <label for="password">Enter a Password:</label>
-        <input id="password" type="password" name="password" style="width: 300px">
-        <input type="submit" value="Submit">
-      </form>
-
-    </main>
-  </body>
 </html>

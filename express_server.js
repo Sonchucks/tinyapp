@@ -101,7 +101,7 @@ app.post('/urls/:id/delete', (req, res) => {
 // Deletes the cookie when user logouts from /urls
 app.post('/logout', (req, res) => {
   req.session = null;
-  res.redirect('/login');
+  res.redirect('/urls');
 });
 
 // When /urls/new is inputted into the address bar, it renders urls_new page
@@ -138,20 +138,14 @@ app.get('/urls/:id', (req, res) => {
     users: userDatabase[req.session.id]
     };
 
-  for (let keys in urlDatabase) {
-    if (urlDatabase[keys] !== templateVars.shortURL) {
-      res.send('This shortURL does not exist');
+  if (templateVars.userID) {
+    if (urlDatabase[templateVars.shortURL].userID === templateVars.userID) {
+      res.render('urls_show', templateVars);
     } else {
-      if (templateVars.userID) {
-        if (urlDatabase[templateVars.shortURL].userID === templateVars.userID) {
-          res.render('urls_show', templateVars);
-        } else {
-          res.send('You are not able to edit this URL');
-        }
-      } else {
-        res.redirect('/login');
-      }
+      res.send('You are not able to edit this URL');
     }
+  } else {
+    res.redirect('/login');
   }
 });
 
@@ -169,7 +163,12 @@ app.post('/urls/:id', (req, res) => {
 
 //renders the login page
 app.get('/login', (req, res) => {
-  res.render('login');
+  const userID = req.session.id;
+  if (userID) {
+    res.redirect('/urls');
+  } else {
+    res.render('login');
+  }
 });
 
 // Allows user to input into field a username and login
@@ -192,7 +191,12 @@ app.post('/login', (req, res) => {
 
 // renders the registration page
 app.get('/register', (req, res) => {
-  res.render('registration');
+  const userID = req.session.id;
+  if (userID) {
+    res.redirect('/urls');
+  } else {
+    res.render('registration');
+  }
 });
 
 
