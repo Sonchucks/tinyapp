@@ -119,7 +119,7 @@ app.post('/urls/new', (req, res) => {
   const userID = req.cookies.id;
   urlDatabase[newShortID] = { longURL: newInput, userID: userID };
 
-  res.redirect(`/urls`);
+  res.redirect(`/urls/${newShortID}`);
 });
 
 // when /urls/:id is inputted into the address bar, it renders urls_show page
@@ -142,8 +142,9 @@ app.get('/urls/:id', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newInput = req.body.longURL;
+  const userID = req.cookies.id;
 
-  urlDatabase[shortURL] = newInput;
+  urlDatabase[shortURL] = { longURL: newInput, userID: userID };
   res.redirect(`/urls`);
 });
 
@@ -194,7 +195,7 @@ app.post('/register', (req, res) => {
 
 // using shortURL, redirects to longURL
 app.get('/u/:shortURL', (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
