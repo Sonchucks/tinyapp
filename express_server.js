@@ -47,38 +47,33 @@ const userDatabase = {
 
 // function generating a random short ID
 function generateRandomString() {
-  let shortID = '';
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (var i = 0; i < 6; i++) {
-    shortID += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return shortID;
+  return Math.random().toString(36).substring(7);
 }
 
 // function to validate inputted email against userDatabase
+// as well as retrieve the user's ID if there's a match
 function validateEmail(email) {
-  for (var randomUserID in userDatabase) {
-    if (userDatabase[randomUserID].email === email) {
-      return true;
-    }
-  }
-}
-
-// function to obtain ID from the email
-function obtainID(email) {
   for (var randomUserID in userDatabase) {
     if (userDatabase[randomUserID].email === email) {
       return randomUserID;
     }
   }
+  return false;
 }
+
+function isLoggedIn(req, res, next) {
+  if (req.session.id) {
+    return next();
+  }
+  res.redirect('/login');
+}
+
 
 // When /urls is inputted into the address bar, it renders the urls_index page
 app.get('/urls', (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    users: userDatabase[req.session.id]
+    user: userDatabase[req.session.id]
   };
   res.render('urls_index', templateVars);
 });
@@ -103,17 +98,11 @@ app.post('/logout', (req, res) => {
 });
 
 // When /urls/new is inputted into the address bar, it renders urls_new page
-app.get('/urls/new', (req, res) => {
+app.get('/urls/new', isLoggedIn, (req, res) => {
   const templateVars = {
-    urls: urlDatabase,
-    users: userDatabase[req.session.id]
+    user: userDatabase[req.session.id]
   };
-
-  if (req.session.id) {
-    res.render('urls_new', templateVars);
-  } else {
-    res.redirect('/login');
-  }
+  res.render('urls_new', templateVars);
 });
 
 // posts to /urls/<shortid> after adding key-value pair
@@ -127,23 +116,18 @@ app.post('/urls', (req, res) => {
 });
 
 // when /urls/:id is inputted into the address bar, it renders urls_show page
-app.get('/urls/:id', (req, res) => {
+app.get('/urls/:id', isLoggedIn, (req, res) => {
   const templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
     userID : req.session.id,
-    urls: urlDatabase,
-    users: userDatabase[req.session.id]
-    };
+    user: userDatabase[req.session.id]
+  };
 
-  if (templateVars.userID) {
-    if (urlDatabase[templateVars.shortURL].userID === templateVars.userID) {
-      res.render('urls_show', templateVars);
-    } else {
-      res.send('You are not able to edit this URL');
-    }
+  if (urlDatabase[templateVars.shortURL].userID === templateVars.userID) {
+    res.render('urls_show', templateVars);
   } else {
-    res.redirect('/login');
+    res.send('You are not able to edit this URL');
   }
 });
 
@@ -175,11 +159,10 @@ app.post('/login', (req, res) => {
   const eMail = req.body.email;
   const password = req.body.password;
 
-  if (validateEmail(eMail) && bcrypt.compareSync(password, userDatabase[obtainID(eMail)].password)) {
-    const id = obtainID(eMail);
-    req.session.id = userDatabase[id].id;
+  if (validateEmail(eMail) && bcrypt.compareSync(password, userDatabase[validateEmail(eMail)].password)) {
+    req.session.id = userDatabase[validateEmail(eMail)].id;
     res.redirect('/urls');
-  } else if (validateEmail(eMail) && !bcrypt.compareSync(password, userDatabase[obtainID(eMail)].password)) {
+  } else if (validateEmail(eMail) && !bcrypt.compareSync(password, userDatabase[validateEmail(eMail)].password)) {
     res.status(403).send(`The password you've submitted is incorrect!
       Please try again!`);
   } else if (!validateEmail(eMail)) {
@@ -189,9 +172,8 @@ app.post('/login', (req, res) => {
 
 // renders the registration page
 app.get('/register', (req, res) => {
-  const userID = req.session.id;
-  if (userID) {
-    res.redirect('/urls');
+  if (req.session.id) {
+    res.redirect('/urls')
   } else {
     res.render('registration');
   }
@@ -207,7 +189,7 @@ app.post('/register', (req, res) => {
 
   if (!eMail || !password) {
     res.status(400).send('Please enter a valid email and/or password!');
-  } else if (validateEmail(eMail) === true) {
+  } else if (validateEmail(eMail)) {
     res.status(400).send('Email already exists');
   } else {
     userDatabase[randomUserID] = {id: randomUserID, email: eMail, password: hashedPassword};
@@ -226,19 +208,15 @@ app.get('/u/:shortURL', (req, res) => {
 // when attempting to get / page, will redirect you to either the main urls
 // page or to the login page depending on whether you're already logged in
 // or not
-app.get('/', (req, res) => {
-  if (req.session.id) {
-    res.redirect('/urls');
-  } else {
-    res.redirect('/login');
-  }
+app.get('/', isLoggedIn, (req, res) => {
+  res.redirect('/urls');
 });
 
 
-// extra code from original template
-app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n');
-});
+// // extra code from original template
+// app.get('/hello', (req, res) => {
+//   res.send('<html><body>Hello <b>World</b></body></html>\n');
+// });
 
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);

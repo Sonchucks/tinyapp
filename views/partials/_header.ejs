@@ -1,10 +1,10 @@
 <h1>Tiny App</h1>
 
 <h3>
-    <% if (users) { %>
+    <% if (user) { %>
       <table style="width:0%;">
         <tr>
-          <th><%= users.email %></th>
+          <th><%= user.email %></th>
           <th>
             <form method="POST" action="/logout">
               <input type="submit" value="Logout">

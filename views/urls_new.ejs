@@ -3,12 +3,12 @@
 
 <head>
   <title>TinyAPP New ShortURL</title>
-  <% include ./partials/_header %>
 </head>
 
 <body>
-  <main>
+  <% include ./partials/_header %>
 
+  <main>
     <form action="/urls" method="POST">
       <table style="width:0%; margin-left:auto; margin-right:auto; text-align:left;">
         <caption><h2>Create a New ShortURL</h2></caption>
@@ -26,10 +26,10 @@
       <table>
     </form>
     <center>
-    <form method="GET" action='/urls'>
-      <input type="submit" value="Main">
-    </form>
-    </center
+      <form method="GET" action='/urls'>
+        <input type="submit" value="Main">
+      </form>
+    </center>
 
   </main>
 </body>

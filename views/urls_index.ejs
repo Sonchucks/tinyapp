@@ -3,12 +3,13 @@
 
 <head>
   <title>TinyAPP URLS</title>
-  <% include ./partials/_header %>
 </head>
 
 <body>
+  <% include ./partials/_header %>
   <main>
-    <% if (users) { %>
+
+    <% if (user) { %>
       <table>
         <tr>
           <th>Original URL</th>
@@ -17,7 +18,7 @@
           <th>Delete</th>
         </tr>
         <% for (var shortURLS in urls) { %>
-          <% if (users.id === urls[shortURLS].userID) { %>
+          <% if (user.id === urls[shortURLS].userID) { %>
             <tr>
               <th><%= urls[shortURLS].longURL %></th>
               <th><a href='<%= urls[shortURLS].longURL %>'><%= shortURLS %></a></th>

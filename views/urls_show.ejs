@@ -3,37 +3,40 @@
 
 <head>
   <title>TinyAPP Edit</title>
-  <% include ./partials/_header %>
 </head>
 
 <body>
-
+  <% include ./partials/_header %>
   <main>
+
     <h1>Reassign your ShortURL</h1>
-      <table>
+
+    <table>
+      <tr>
+        <th>New URL</th>
+        <th>ShortURL</th>
+        <th>Original URL</th>
+      </tr>
+      <form method="POST" action="/urls/<%= shortURL %>">
         <tr>
-          <th>New URL</th>
-          <th>ShortURL</th>
-          <th>Original URL</th>
+          <th>
+            <span>
+            <input id="longURL", type="text" name="longURL" placeholder="http://" style="width: 80%">
+            <input type="submit" value="Update">
+            </span>
+          </th>
+          <th><a href='/u/<%= shortURL %>'>/u/<%= shortURL %></a></th>
+          <th><a href='<%= longURL %>'><%= longURL.longURL %></a></th>
         </tr>
-        <form method="POST" action="/urls/<%= shortURL %>">
-          <tr>
-            <th>
-              <span>
-              <input id="longURL", type="text" name="longURL" placeholder="http://" style="width: 80%">
-              <input type="submit" value="Update">
-              </span>
-            </th>
-            <th><a href='/u/<%= shortURL %>'>/u/<%= shortURL %></a></th>
-            <th><a href='<%= longURL %>'><%= longURL.longURL %></a></th>
-          </tr>
-        </form>
-      </table>
-      <center>
+      </form>
+    </table>
+
+    <center>
       <form method="GET" action='/urls'>
         <input type="submit" value="Main">
       </form>
-      </center>
+    </center>
+
   </main>
 
 
