@@ -2,7 +2,6 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-// const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 let app = express();
@@ -10,13 +9,12 @@ const PORT = 8080; // default port 8080
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['id']
 }));
 
-
+// Hard-coded url database in order to test code
 const urlDatabase = {
   'b2xVn2': {
     longURL: 'http://www.lighthouselabs.ca',
@@ -28,7 +26,7 @@ const urlDatabase = {
   }
 };
 
-
+// Hard-coded user database in order to test code
 const userDatabase = {
   'userRandomID': {
     id: 'userRandomID',
@@ -225,7 +223,9 @@ app.get('/u/:shortURL', (req, res) => {
   res.redirect(longURL);
 });
 
-
+// when attempting to get / page, will redirect you to either the main urls
+// page or to the login page depending on whether you're already logged in
+// or not
 app.get('/', (req, res) => {
   if (req.session.id) {
     res.redirect('/urls');
@@ -234,6 +234,8 @@ app.get('/', (req, res) => {
   }
 });
 
+
+// extra code from original template
 app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
@@ -242,6 +244,7 @@ app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
+// check on terminal which port is being used to run node express_server.js
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
