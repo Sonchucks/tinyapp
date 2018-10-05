@@ -4,15 +4,27 @@ TinyAPP is a full stack web application build with Node and express that allows 
 
 ## Final Product
 
+### Main URLS Page when not logged in.
+
 !["Main URLS Page when not logged in."](https://github.com/Sonchucks/w2tinyapp-proejct/blob/master/docs/main-page-no-login.png)
+
+### Main URLS Page once logged in.
 
 !["Main URLS Page once logged in."](https://github.com/Sonchucks/w2tinyapp-proejct/blob/master/docs/main-page-logged-in.png)
 
+### Login Page
+
 !["Login Page"](https://github.com/Sonchucks/w2tinyapp-proejct/blob/master/docs/login-page.png)
+
+### Registration Page
 
 !["Registration Page"](https://github.com/Sonchucks/w2tinyapp-proejct/blob/master/docs/registration-page.png)
 
+### Create New ShortURL Page
+
 !["Create New ShortURL Page"](https://github.com/Sonchucks/w2tinyapp-proejct/blob/master/docs/create-new-url-page.png)
+
+### Edit ShortURL's Assignment Page
 
 !["Edit ShortURL's Assignment Page"](https://github.com/Sonchucks/w2tinyapp-proejct/blob/master/docs/view-short-url-and-edit-page.png)
 
